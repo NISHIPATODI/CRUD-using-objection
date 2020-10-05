@@ -3,11 +3,11 @@
 
 const { Model } = require('objection');
 
-class Post extends Model {
+class University extends Model {
 
   // Table name is the only required property.
   static get tableName() {
-    return 'student';
+    return 'university';
   }
 
  /* static get jsonSchema() {
@@ -22,25 +22,23 @@ class Post extends Model {
 
 
   static get relationMappings(){
-    const University =require("./universityModel")
+  const Post =require("./studentModel")
     
     return {
-      pktofk:{
+      studUni:{
         
-      relation:Model.HasOneRelation,
-      modelClass:University,
+      relation:Model.BelongsToOneRelation,
+      modelClass:Post,
       join:{
-          from:"student.id",
-          to:"university.studid"
+          from:"university.studid",
+          to:"student.id"
       }
     }
 
-
- 
 
     }
   }
 
 }
 
-module.exports = Post;
+module.exports = University;

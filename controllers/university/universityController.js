@@ -1,30 +1,34 @@
-const Post = require("../../models/studentModel");
+const University = require("../../models/universityModel");
+const Knex = require("knex");
 
 const AddPost = async (req,res)=>{
     let data  = req.body;
-         console.log(data)
+         console.log("req.body is "+data)
         
-        let post_added = await Post.query().skipUndefined().insert(data).returning("*");
+        let post_added = await University.query().skipUndefined().insert(data).returning("uniId");
        // if(!post_added) return badRequestError(res,"Post not added");
        if(!post_added) return res.send("Post not added");
-    
+    console.log("value of "+post_added);
         return res.send("Entry Added");
     },
      GetPosts = async (req,res)=>{
     
-        let posts = await Post.query().skipUndefined().withGraphFetched(
-            "[pktofk(SelectUserName, onlydes)]"
+        let posts = await University.query().select().withGraphFetched(
+            "[studUni(SelectUserName, onlydes)]"
            //"studUni"  
            )
           .modifiers({
             SelectUserName(builder) {
-              builder.select('uniname','uniId');
+              builder.select('id','Name');
             },
             
               onlydes(builder) {
-                builder.select('branch');
+                builder.select('Description');
               }
-        });
+        })
+        //.returning('uniId');
+        //let posts = await University.query().select('university.*');
+       // 'uniId','uniname','studid'
         
         //return okResponse(res,posts,"Posts Details");
         return res.send(posts);
@@ -33,17 +37,22 @@ const AddPost = async (req,res)=>{
     },
 
      GetPost = async (req,res)=>{
-        let data = req.params.postName;
-          //data='nishi';
+       // let data = req.params.postName;
+          data='null';
          // let data = req.body.Name;
           
          //  let data = req.body;
          console.log(data);
            //if(!data.fullName) return badRequestError(res,"Enter Fullname");
        
-           let post = await Post.query().skipUndefined().where("Name",data).first();
-           if(post === undefined )   return res.send("no post found")
-           //console.log(post);
+          // let post = await University.query().skipUndefined().where("uniname",data).first().returning('uniname');
+           
+          let post = await knex('university')
+            .returning('id')
+            .insert({uniname: 'Slaughterhouse'})
+          
+          if(post === undefined )   return res.send("no post found")
+        console.log(post);
   
            //return badRequestError(res,"No post found");
        
@@ -55,7 +64,7 @@ const AddPost = async (req,res)=>{
 
        
      UpdatePost = async(req,res)=>{
-    let data = req.body;
+    let data = req.body;  
 console.log(data);
     let updated_post = await Post.query().skipUndefined().update(data).where("id",data.id);
 

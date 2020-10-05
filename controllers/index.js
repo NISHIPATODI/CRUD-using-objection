@@ -1,9 +1,9 @@
 const PostController = require("./student/studentcontroller");
-//const AuthController = require("./user/AuthController");
+const universityController = require("./university/universityController");
 
 
 
 module.exports = {
-    PostController
-  //  AuthController
+    PostController,
+   universityController
 }
