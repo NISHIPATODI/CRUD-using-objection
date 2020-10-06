@@ -1,4 +1,9 @@
-const University = require("../../models/universityModel");
+const University = require("../../models/order");
+const Customer = require("../../models/customer");
+const Order = require("../../models/order");
+const pbill= require("../../models/pbill");
+const Product= require("../../models/product");
+
 const Knex = require("knex");
 
 const AddPost = async (req,res)=>{
@@ -13,19 +18,16 @@ const AddPost = async (req,res)=>{
     },
      GetPosts = async (req,res)=>{
     
-        let posts = await University.query().select().withGraphFetched(
-            "[studUni(SelectUserName, onlydes)]"
+        let posts = await Order.query().select().withGraphFetched(
+            "[billDetails(Select)]"
            //"studUni"  
            )
           .modifiers({
-            SelectUserName(builder) {
-              builder.select('id','Name');
+            Select(builder) {
+              builder.select('pbill');
             },
-            
-              onlydes(builder) {
-                builder.select('Description');
-              }
-        })
+          
+          })
         //.returning('uniId');
         //let posts = await University.query().select('university.*');
        // 'uniId','uniname','studid'

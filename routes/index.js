@@ -5,10 +5,19 @@ const router  = express.Router();
 const PostController = require("../controllers/index").PostController;
 const UniController = require("../controllers/index").universityController;
 
-router.post("/addpost",PostController.AddPost);
-router.get("/getposts",PostController.GetPosts);
+router.post("/addbill",PostController.AddBill);
 
-router.get("/getpost/:postName",PostController.GetPost);
+//under the hoode HasManyRelation. BelongstoOne
+router.get("/getOrderDetails",PostController.GetFulllDetail);
+
+//Belongs to one
+router.get("/getBillDetails",PostController.Getorderid);
+
+//HasOneRelation
+router.get("/getorderIdbill",PostController.GetBill);
+
+
+
 router.put("/post",PostController.UpdatePost);
 router.delete("/postdelete",PostController.RemovePost);
 
@@ -16,7 +25,6 @@ router.delete("/postdelete",PostController.RemovePost);
 router.delete("/post/:id",PostController.RemovePost);*/
 
 router.post("/adduni",UniController.AddPost);
-router.get("/getuni",UniController.GetPosts);
 router.get("/getuniname",UniController.GetPost);
 
 router.post("/trial",(req,res)=>{

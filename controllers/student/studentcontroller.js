@@ -1,57 +1,82 @@
-const Post = require("../../models/studentModel");
+const Customer = require("../../models/customer");
+const Order = require("../../models/order");
+const pbill= require("../../models/pbill");
+const Product= require("../../models/product");
 
-const AddPost = async (req,res)=>{
+
+const AddBill = async (req,res)=>{
     let data  = req.body;
          console.log(data)
         
-        let post_added = await Post.query().skipUndefined().insert(data).returning("*");
+        let post_added = await pbill.query().skipUndefined().insert(data).returning("*");
        // if(!post_added) return badRequestError(res,"Post not added");
        if(!post_added) return res.send("Post not added");
     
         return res.send("Entry Added");
     },
-     GetPosts = async (req,res)=>{
+
+    //GetOrderDetails
+     GetFulllDetail = async (req,res)=>{
     
-        let posts = await Post.query().skipUndefined().withGraphFetched(
-            "[pktofk(SelectUserName, onlydes)]"
-           //"studUni"  
-           )
+        let results = await Customer.query().skipUndefined().withGraphFetched(
+            "[custOrderDetails(SelectOrderDetails).[productDetails,billDetails(Select)]]"
+          
+            )
           .modifiers({
-            SelectUserName(builder) {
-              builder.select('uniname','uniId');
-            },
-            
-              onlydes(builder) {
-                builder.select('branch');
-              }
-        });
+            SelectOrderDetails(builder) {
+              builder.select('orderid','prodName');
+            }
+          }).modifiers({
+            Select(builder) {
+              builder.select('pbill');
+            }
+               });
         
         //return okResponse(res,posts,"Posts Details");
-        return res.send(posts);
+        return res.send(results);
 
 
     },
 
-     GetPost = async (req,res)=>{
-        let data = req.params.postName;
+     Getorderid = async (req,res)=>{
+        //let data = req.params.postName;
           //data='nishi';
          // let data = req.body.Name;
           
          //  let data = req.body;
-         console.log(data);
+         //console.log(data);
            //if(!data.fullName) return badRequestError(res,"Enter Fullname");
        
-           let post = await Post.query().skipUndefined().where("Name",data).first();
-           if(post === undefined )   return res.send("no post found")
-           //console.log(post);
-  
-           //return badRequestError(res,"No post found");
-       
-        //   return okResponse(res,post,"Post Details")
+           let post = await pbill.query().skipUndefined().withGraphFetched(
+            "[pbillDetails]"
+          
+            )
+         /* .modifiers({
+            SelectOrderDetails(builder) {
+              builder.select('orderid','prodName');
+            }
+               });*/
+        
         return res.send(post)
          
     
     },
+    GetBill= async (req,res)=>{
+    
+      let posts = await Order.query().select().withGraphFetched(
+          "[billDetails(Select)]"
+         //"studUni"  
+         )
+        .modifiers({
+          Select(builder) {
+            builder.select('pbill');
+          },
+        
+        })
+        return res.send(posts);
+
+      }
+  ,
 
        
      UpdatePost = async(req,res)=>{
@@ -85,9 +110,10 @@ console.log(data);
 
     
     module.exports = {
-        AddPost,
-        GetPosts,
-        GetPost,
+        AddBill,
+        GetFulllDetail,
+        Getorderid,
+        GetBill,
         UpdatePost,
         RemovePost
        }

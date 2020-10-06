@@ -27,7 +27,7 @@ const userRoutes = require("./routes/index");
 
 app.use("/api",userRoutes);
 
-const port =3000;
+const port =4000;
 
 // Express Server 
 app.listen(port, () => {
